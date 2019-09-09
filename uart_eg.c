@@ -1,4 +1,5 @@
 //In this example the microcontroller echos back the received bytes to the sender using UART RX interrupt.
+//This example used an STM32F4 Discovery (STM32F407VG), GPIO and alternate function values should be changed according to the STM32 microcontroller in use.
 
 #include "stm32f4xx.h"
 
