@@ -19,3 +19,6 @@ void adxl_read (uint8_t address)
 	HAL_SPI_Receive (&hspi1, data_rec, 6, 100);  // receive 6 bytes data
 	HAL_GPIO_WritePin (GPIOB, GPIO_PIN_6, GPIO_PIN_SET);  // pull the pin high
 }
+
+
+https://controllerstech.com/how-to-use-spi-with-stm32/
