@@ -25,6 +25,8 @@ https://controllerstech.com/how-to-use-spi-with-stm32/
 
 
 main pour lire le whoImI register de LSM303D magneto accelero, attention : chip select à l'état haut avant de passer à l'état bas, c'est le changement d'état qui compte
+Configurer pin CS gpio en OUTPUT
+
 
 /* USER CODE BEGIN Header */
 /**
@@ -125,10 +127,7 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  /* USER CODE END 2 */
-
-
-  uint8_t octet_read =0b10001111; //0xc8 : Axe X
+  uint8_t octet_read = 0b11001000; //0xc8 : Axe X 0b11010000, Who Am I : 0b10001111
   uint8_t data[3];
   uint8_t datain[3];
 
@@ -137,30 +136,40 @@ int main(void)
   datain[2]=0;
 
 
+  /* USER CODE END 2 */
 
-
-
-
+  /* Infinite loop */
 
   while (1)
   {
 
-	  //Read axe  X low 0x08 2 octets à lire
-	  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_RESET);
 
-	  HAL_SPI_TransmitReceive(&hspi1,datain , data, 3, HAL_MAX_DELAY);
-	  HAL_SPI_Transmit(&hspi1,&octet_read, 1, HAL_MAX_DELAY);
-	  HAL_SPI_Receive(&hspi1, data, 2, HAL_MAX_DELAY);
-	  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_SET);
+	  /* USER CODE BEGIN WHILE */
+	  /*
+	  //Read registre Who Am I 0x0f : valeur (73)10
+	  	  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_RESET);
+
+	  	  //HAL_SPI_TransmitReceive(&hspi1,datain , data, 3, HAL_MAX_DELAY);
+	  	  HAL_SPI_Transmit(&hspi1,&octet_read, 1, HAL_MAX_DELAY);
+	  	  HAL_SPI_Receive(&hspi1, data, 2, HAL_MAX_DELAY);
+	  	  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_SET);
+		*/
 
 
 
-	  HAL_Delay(1000);
+	  	  //Read axe  X low 0x08 2 octets à lire
+	  	  	  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_RESET);
+
+	  	  	  HAL_SPI_TransmitReceive(&hspi1,datain , data, 3, HAL_MAX_DELAY);
+
+	  	  	  HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_SET);
 
 
 
+	  	  HAL_Delay(1000);
+	  	 /* USER CODE END WHILE */
+    /* USER CODE BEGIN 3 */
   }
-
   /* USER CODE END 3 */
 }
 
@@ -280,23 +289,21 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {1};
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
   /*Configure GPIO pin : PA4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PB0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
@@ -334,4 +341,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
